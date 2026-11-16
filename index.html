@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>留數定理 LLM Wiki</title>
+<style>
+:root { --paper:#faf7f0; --ink:#25211b; --soft:#6a6255; --line:#ddd4c1; --accent:#d2602a; --card:#fffdf8; }
+@media (prefers-color-scheme: dark) { :root { --paper:#1c1a17; --ink:#eee8dc; --soft:#b3aa99; --line:#3b362e; --accent:#f08a54; --card:#24211d; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); font-family:system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif; line-height:1.7; }
+main { max-width:960px; margin:0 auto; padding:48px 16px 64px; }
+.kicker { color:var(--accent); font-weight:700; letter-spacing:.12em; font-size:.85rem; }
+h1 { font-size:clamp(1.9rem,5vw,2.8rem); margin:.2em 0 .3em; line-height:1.3; }
+.lead { color:var(--soft); font-size:1.1rem; margin:0 0 28px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; }
+a.card { display:block; padding:18px 20px; border:1px solid var(--line); border-radius:14px; background:var(--card); color:var(--ink); text-decoration:none; }
+a.card:hover { border-color:var(--accent); }
+a.card b { display:block; font-size:1.1rem; margin-bottom:4px; }
+a.card span { color:var(--soft); font-size:.92rem; }
+a.card.main { border:2px solid var(--accent); }
+h2 { margin:44px 0 12px; font-size:1.3rem; }
+figure { margin:0; background:#fff; border-radius:14px; padding:16px; border:1px solid var(--line); text-align:center; }
+figure img { max-width:100%; max-height:900px; height:auto; }
+</style>
+</head>
+<body>
+<main>
+  <div class="kicker">LLM WIKI × 教學簡報</div>
+  <h1>留數定理 LLM Wiki 🐱</h1>
+  <p class="lead">從 9 份公開資料建立 Wiki，用程式驗算其中每個數字，再只用 Wiki 的內容產生給大一生的教學簡報。</p>
+
+  <div class="grid">
+    <a class="card main" href="slides/"><b>🎞️ 教學簡報</b><span>12 頁・留數定理入門</span></a>
+    <a class="card" href="https://github.com/zyiqi17/residue-llm-wiki/blob/main/wiki/index.md"><b>📚 Wiki</b><span>10 個概念頁・9 份來源</span></a>
+    <a class="card" href="https://github.com/zyiqi17/residue-llm-wiki/blob/main/docs/run-log.md"><b>🧾 執行紀錄</b><span>9 次回頭修正的過程</span></a>
+    <a class="card" href="https://github.com/zyiqi17/residue-llm-wiki/blob/main/docs/reflection.md"><b>🪞 反思</b><span>哪個節點最常出錯</span></a>
+  </div>
+
+  <h2>流程（loop / graph）</h2>
+  <figure><img src="docs/workflow.svg" alt="流程圖：討論 → 取得資料 → 品質閘門 → Ingest → 檢查 Wiki → 查詢 Wiki → 產生簡報 → 檢查簡報 → 人工看截圖 → 發布，失敗時各自回到前面的步驟"></figure>
+</main>
+</body>
+</html>
