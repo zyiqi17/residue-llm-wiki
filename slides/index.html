@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>留數定理入門</title>
+<meta name="description" content="給修過微積分的大一生：繞一圈就知道答案的留數定理。內容由留數定理 LLM Wiki 產生。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+TC:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #faf7f0; --paper-2: #f1ebdd; --ink: #25211b; --soft: #6a6255; --line: #ddd4c1;
+  --accent: #d2602a; --accent-2: #fbe4d6; --blue: #2f6fb0; --blue-2: #e3edf8; --green: #2f8a55; --green-2: #e1f1e7;
+  --red: #b3401f; --red-2: #fbe9e4;
+  --serif: "Noto Serif TC", "Songti TC", serif;
+  --sans: "Noto Sans TC", system-ui, -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --math: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #1c1a17; --paper-2: #26231e; --ink: #eee8dc; --soft: #b3aa99; --line: #3b362e;
+    --accent: #f08a54; --accent-2: #3a2619; --blue: #85b6ea; --blue-2: #1f2a37; --green: #72cf98; --green-2: #1b3125;
+    --red: #ff9b85; --red-2: #3a201b; }
+}
+* { box-sizing: border-box; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); -webkit-text-size-adjust: 100%; }
+
+.slide {
+  min-height: 100vh; scroll-snap-align: start; position: relative;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 56px max(16px, 7vw) 64px; border-bottom: 1px dashed var(--line);
+  background-image: radial-gradient(var(--line) 1px, transparent 1.2px); background-size: 24px 24px;
+}
+.slide > .inner { max-width: 1100px; width: 100%; margin: 0 auto; }
+.kicker { color: var(--accent); font-weight: 700; letter-spacing: .14em; font-size: clamp(.75rem, 1.2vw, .9rem); }
+h1, h2 { font-family: var(--serif); line-height: 1.3; margin: .2em 0 .5em; }
+h1 { font-size: clamp(2.2rem, 6vw, 4.2rem); }
+h2 { font-size: clamp(1.6rem, 3.4vw, 2.6rem); }
+p, li { font-size: clamp(1.02rem, 1.75vw, 1.35rem); line-height: 1.75; }
+.lead { color: var(--soft); font-size: clamp(1.1rem, 2vw, 1.5rem); }
+.cols { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(20px, 4vw, 56px); align-items: center; }
+.cols > * { min-width: 0; }   /* 讓不換行的公式不會把整個欄位撐寬 */
+@media (max-width: 760px) { .cols { grid-template-columns: 1fr; } html { scroll-snap-type: none; } .slide { min-height: auto; padding-top: 64px; }
+  .eq { white-space: normal; line-height: 1.9; } }
+
+/* 數學 */
+.m { font-family: var(--math); font-style: italic; white-space: nowrap; }
+.m .up { font-style: normal; }
+.eq { font-family: var(--math); font-size: clamp(1.3rem, 3vw, 2.2rem); text-align: center; margin: .6em 0; padding: .55em .8em;
+      background: var(--paper-2); border-radius: 14px; overflow-x: auto; white-space: nowrap; }
+.frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; line-height: 1.2; margin: 0 .12em; }
+.frac > span:first-child { border-bottom: .07em solid currentColor; padding: 0 .2em .05em; }
+.frac > span:last-child { padding: .05em .2em 0; }
+.big { font-size: 1.35em; vertical-align: middle; }
+.hl { color: var(--accent); font-weight: 700; font-style: normal; }
+
+/* 元件 */
+.box { border-radius: 16px; padding: 16px 22px; margin: 12px 0; }
+.box.idea { background: var(--accent-2); }
+.box.def { background: var(--blue-2); }
+.box.ok { background: var(--green-2); }
+.box.warn { background: var(--red-2); color: var(--red); }
+.box p { margin: .2em 0; }
+.box strong { margin-right: .3em; }
+table.n { border-collapse: collapse; font-family: var(--math); font-size: clamp(1.1rem, 2.2vw, 1.6rem); margin: 0 auto; }
+table.n td, table.n th { border: 1px solid var(--line); padding: .35em .9em; text-align: center; }
+table.n th { font-family: var(--sans); font-size: .75em; color: var(--soft); background: var(--paper-2); }
+table.n td.win { background: var(--accent-2); color: var(--accent); font-weight: 700; }
+ol.steps { padding-left: 1.3em; margin: .3em 0; }
+ol.steps li { margin: .25em 0; }
+svg { width: 100%; height: auto; max-height: 52vh; }
+svg text { font-family: var(--sans); fill: var(--ink); }
+.fig-caption { text-align: center; color: var(--soft); font-size: clamp(.85rem, 1.3vw, 1rem); margin-top: 4px; }
+
+/* 頁尾：資料出處 */
+.src { position: absolute; left: max(16px, 7vw); bottom: 18px; font-size: .8rem; color: var(--soft); }
+.src a { color: var(--soft); }
+.pageno { position: absolute; right: max(16px, 7vw); bottom: 18px; font-size: .8rem; color: var(--soft); }
+
+/* 導覽 */
+.nav { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 5; }
+.nav a { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; }
+.nav a.on { background: var(--accent); transform: scale(1.4); }
+@media (max-width: 760px) { .nav { display: none; } }
+.hint { color: var(--soft); font-size: .9rem; margin-top: 2em; }
+</style>
+</head>
+<body>
+
+<!-- ========== 1 ========== -->
+<section class="slide" id="s1" data-wiki="index.md" data-checks="" data-defines="" data-uses="">
+  <div class="inner">
+    <div class="kicker">複變函數入門 · 給修過微積分的你</div>
+    <h1>繞一圈，就知道答案<br>── 留數定理入門 🐱</h1>
+    <p class="lead">一個複雜的積分，有時候只要知道函數在幾個「壞掉的點」附近長什麼樣子，就能直接寫出答案。</p>
+    <p class="hint">⌨️ 用 ↓ / 空白鍵翻頁 · 本簡報的內容全部來自〈留數定理 LLM Wiki〉</p>
+  </div>
+</section>
+
+<!-- ========== 2 ========== -->
+<section class="slide" id="s2" data-wiki="concepts/real-integrals.md" data-checks="V12" data-defines="" data-uses="">
+  <div class="inner">
+    <div class="kicker">暖身</div>
+    <h2>你已經會算的一個積分</h2>
+    <div class="eq"><span class="big">∫</span><sub>−∞</sub><sup>∞</sup> <span class="frac"><span>1</span><span>1 + <i>x</i>²</span></span> <i>dx</i> = arctan <i>x</i> │<sub>−∞</sub><sup>∞</sup> = <span class="frac"><span>π</span><span>2</span></span> − (−<span class="frac"><span>π</span><span>2</span></span>) = <span class="hl">π</span></div>
+    <p>微積分課用反三角函數就能算出來。</p>
+    <div class="box idea"><p><strong>今天的目標</strong>用一個<b>完全不同</b>的方法再算一次：不找反導函數，而是走到複數平面上<b>繞一圈</b>。</p></div>
+    <p>最後一頁之前，你會看到答案一樣是 π。</p>
+  </div>
+</section>
+
+<!-- ========== 3 ========== -->
+<section class="slide" id="s3" data-wiki="concepts/contour-integral-basics.md" data-checks="" data-defines="封閉曲線積分" data-uses="">
+  <div class="inner cols">
+    <div>
+      <div class="kicker">第一步</div>
+      <h2>在複數平面上積分</h2>
+      <p>微積分的 ∫<sub>a</sub><sup>b</sup> f(x) dx 是沿著<b>數線</b>從 a 走到 b。</p>
+      <p>複數 z = x + iy 住在<b>平面</b>上，所以積分可以沿著平面上的任何<b>路徑</b>走，甚至<b>繞一圈回到起點</b>。</p>
+      <div class="box def"><p><strong>封閉曲線積分</strong>沿著一條封閉曲線 C 把 f(z)·dz 加起來，記作 <span class="m">∮<sub>C</sub> f(z) dz</span>。</p>
+      <p>預設方向是<b>逆時針</b>。</p></div>
+    </div>
+    <figure>
+      <svg viewBox="0 0 320 260" role="img" aria-label="複數平面上逆時針繞一圈的封閉曲線">
+        <line x1="20" y1="140" x2="300" y2="140" stroke="currentColor" stroke-opacity=".35"/>
+        <line x1="160" y1="20" x2="160" y2="250" stroke="currentColor" stroke-opacity=".35"/>
+        <text x="288" y="160" font-size="14">實軸</text><text x="168" y="34" font-size="14">虛軸</text>
+        <path d="M160,60 C240,60 260,120 250,160 C235,215 170,230 120,210 C70,190 60,120 90,90 C110,70 135,60 160,60 Z" fill="none" stroke="#d2602a" stroke-width="3.5"/>
+        <polygon points="160,60 146,52 146,68" fill="#d2602a"/>
+        <text x="236" y="214" font-size="16" fill="#d2602a" style="fill:#d2602a">C（逆時針）</text>
+      </svg>
+      <div class="fig-caption">起點 = 終點的路徑，就叫封閉曲線</div>
+    </figure>
+  </div>
+</section>
+
+<!-- ========== 4 ========== -->
+<section class="slide" id="s4" data-wiki="concepts/contour-integral-basics.md" data-checks="V01 V02" data-defines="" data-uses="封閉曲線積分">
+  <div class="inner">
+    <div class="kicker">關鍵發現</div>
+    <h2>繞原點一圈，只有 1/z 會「留下來」</h2>
+    <p>沿著單位圓 |z| = 1 逆時針繞一圈，把各種 zⁿ 的封閉曲線積分算出來：</p>
+    <table class="n">
+      <tr><th>n</th><td>−2</td><td>−1</td><td>0</td><td>1</td><td>2</td></tr>
+      <tr><th>被積函數</th><td>1/z²</td><td>1/z</td><td>1</td><td>z</td><td>z²</td></tr>
+      <tr><th>∮ zⁿ dz</th><td>0</td><td class="win">2πi</td><td>0</td><td>0</td><td>0</td></tr>
+    </table>
+    <div class="box idea"><p><strong>為什麼？</strong>代入 z = e<sup>iθ</sup>，只有 n = −1 時被積分的東西是常數 1，積出 2πi；其他情況都是 e<sup>ikθ</sup> 繞一整圈，正負抵消成 0。</p></div>
+    <p>記住這張表：<b>後面所有內容都是從這裡來的。</b></p>
+  </div>
+</section>
+
+<!-- ========== 5 ========== -->
+<section class="slide" id="s5" data-wiki="concepts/singularities-and-poles.md" data-checks="" data-defines="奇點 極點" data-uses="">
+  <div class="inner cols">
+    <div>
+      <div class="kicker">第二步</div>
+      <h2>奇點：函數「壞掉」的地方</h2>
+      <div class="box def"><p><strong>奇點</strong>函數沒辦法好好定義、會爆掉的點。例如 1/z 在 z = 0。</p></div>
+      <div class="box def"><p><strong>極點</strong>最常見的奇點：函數在那裡像 <span class="frac"><span>c</span><span>(z − z₀)ⁿ</span></span> 一樣爆掉，n 叫做<b>階數</b>。</p></div>
+      <p>1/z → 一階極點（又叫簡單極點）<br>1/z² → 二階極點，爆得更快</p>
+    </div>
+    <figure>
+      <svg viewBox="0 0 300 260" role="img" aria-label="1/(z²+1) 的兩個極點 i 與 −i">
+        <line x1="20" y1="130" x2="280" y2="130" stroke="currentColor" stroke-opacity=".35"/>
+        <line x1="150" y1="15" x2="150" y2="245" stroke="currentColor" stroke-opacity=".35"/>
+        <g stroke="#d2602a" stroke-width="4" stroke-linecap="round"><line x1="140" y1="60" x2="160" y2="80"/><line x1="160" y1="60" x2="140" y2="80"/>
+        <line x1="140" y1="180" x2="160" y2="200"/><line x1="160" y1="180" x2="140" y2="200"/></g>
+        <text x="170" y="76" font-size="18">i</text><text x="170" y="196" font-size="18">−i</text>
+        <text x="24" y="30" font-size="16">f(z) = 1/(z² + 1)</text>
+      </svg>
+      <div class="fig-caption">1/(z² + 1) 在 z = i 和 z = −i 各有一個簡單極點</div>
+    </figure>
+  </div>
+</section>
+
+<!-- ========== 6 ========== -->
+<section class="slide" id="s6" data-wiki="concepts/laurent-series.md" data-checks="V04" data-defines="羅朗級數" data-uses="奇點">
+  <div class="inner">
+    <div class="kicker">第三步</div>
+    <h2>羅朗級數：在奇點旁邊把函數拆開</h2>
+    <p>泰勒級數 a₀ + a₁z + a₂z² + … 只能處理「沒壞掉」的點。在奇點旁邊，需要再加上<b>負次方</b>：</p>
+    <div class="box def"><p><strong>羅朗級數</strong>f(z) = … + <span class="frac"><span>a₋₂</span><span>(z − z₀)²</span></span> + <span class="frac"><span>a₋₁</span><span>z − z₀</span></span> + a₀ + a₁(z − z₀) + …</p></div>
+    <p>例：<span class="m">e<sup>1/(2z)</sup> = 1 + <span class="frac"><span>1</span><span>2z</span></span> + <span class="frac"><span>1</span><span>8z²</span></span> + …</span>　→ 1/z 那一項的係數是 <b>1/2</b></p>
+    <p class="lead">負次方的部分叫做「主部」，它記錄了函數在奇點附近爆掉的方式。</p>
+  </div>
+</section>
+
+<!-- ========== 7 ========== -->
+<section class="slide" id="s7" data-wiki="concepts/residue.md" data-checks="V03" data-defines="留數" data-uses="羅朗級數 封閉曲線積分">
+  <div class="inner">
+    <div class="kicker">主角登場</div>
+    <h2>留數：繞一圈後「剩下來的東西」</h2>
+    <p>把羅朗級數代進封閉曲線積分，逐項積分，再看第 4 頁那張表：</p>
+    <div class="eq">∮ f(z) dz = ∮ ( … + <span class="frac"><span>a₋₂</span><span>(z−z₀)²</span></span> + <span class="frac"><span>a₋₁</span><span>z−z₀</span></span> + a₀ + … ) dz = <span class="hl">2πi · a₋₁</span></div>
+    <div class="box def"><p><strong>留數 Res(f, z₀)</strong>= a₋₁，也就是 1/(z − z₀) 那一項的係數。</p></div>
+    <p>名字的由來：把造成爆掉的部分拿掉之後，<b>剩下來的那個數</b>。例如</p>
+    <p class="m" style="text-align:center"><span class="frac"><span>z</span><span>z² + 1</span></span> = <span class="frac"><span>1/2</span><span>z − i</span></span> + <span class="frac"><span>1/2</span><span>z + i</span></span>　⇒　Res(f, i) = <span class="hl">1/2</span></p>
+  </div>
+</section>
+
+<!-- ========== 8 ========== -->
+<section class="slide" id="s8" data-wiki="concepts/residue-theorem.md" data-checks="V17" data-defines="留數定理" data-uses="留數 奇點">
+  <div class="inner cols">
+    <div>
+      <div class="kicker">今天的定理</div>
+      <h2>留數定理</h2>
+      <div class="eq">∮<sub>C</sub> f dz = 2πi · <span class="hl">Σ Res</span></div>
+      <p>Σ Res：把 <b>C 裡面</b>每個奇點的留數加起來，外面的不算。</p>
+      <p>條件：f 除了一些孤立的奇點以外都很正常；C 是逆時針的封閉曲線，而且不經過奇點。</p>
+      <div class="box idea"><p><strong>直覺</strong>把 C 慢慢「捏小」，變成繞著每個奇點的小圓，每個小圓貢獻 2πi × 留數。<b>外面的奇點完全不影響。</b></p></div>
+    </div>
+    <figure>
+      <svg viewBox="0 0 400 280" role="img" aria-label="曲線 C 圍住 0 和 i，但沒有圍住 −i">
+        <line x1="20" y1="160" x2="300" y2="160" stroke="currentColor" stroke-opacity=".3"/>
+        <line x1="160" y1="15" x2="160" y2="270" stroke="currentColor" stroke-opacity=".3"/>
+        <ellipse cx="160" cy="120" rx="95" ry="80" fill="#d2602a" fill-opacity=".1" stroke="#d2602a" stroke-width="3.5"/>
+        <circle cx="160" cy="160" r="7" fill="#2f8a55"/><circle cx="160" cy="80" r="7" fill="#2f8a55"/>
+        <circle cx="160" cy="240" r="7" fill="none" stroke="#b3401f" stroke-width="3"/>
+        <line x1="167" y1="160" x2="262" y2="186" stroke="currentColor" stroke-opacity=".4"/><text x="266" y="192" font-size="15">0：Res = 1</text>
+        <line x1="167" y1="80" x2="262" y2="62" stroke="currentColor" stroke-opacity=".4"/><text x="266" y="66" font-size="15">i：Res = −1/2</text>
+        <text x="172" y="246" font-size="15">−i：在外面，不算</text>
+        <text x="20" y="30" font-size="15">f(z) = 1/(z(z² + 1))</text>
+      </svg>
+      <div class="fig-caption">∮ = 2πi (1 − 1/2) = πi</div>
+    </figure>
+  </div>
+</section>
+
+<!-- ========== 9 ========== -->
+<section class="slide" id="s9" data-wiki="concepts/computing-residues.md concepts/residue.md" data-checks="V03 V19" data-defines="" data-uses="極點 留數">
+  <div class="inner">
+    <div class="kicker">工具</div>
+    <h2>怎麼算留數？「蓋住法」</h2>
+    <p>在簡單極點 z₀ 附近，f(z) ≈ <span class="frac"><span>A</span><span>z − z₀</span></span>，留數就是 A。所以只要把 (z − z₀) 乘上去，再代 z = z₀：</p>
+    <div class="eq">Res(f, z₀) = lim<sub>z→z₀</sub> (z − z₀) f(z)</div>
+    <div class="box ok">
+      <p><strong>例</strong>f(z) = <span class="frac"><span>z</span><span>(z − i)(z + i)</span></span> 在 z = i：蓋住 (z − i)，剩下 <span class="frac"><span>z</span><span>z + i</span></span>，代 z = i 得 <span class="frac"><span>i</span><span>2i</span></span> = <b>1/2</b></p>
+      <p><strong>例</strong><span class="frac"><span>5</span><span>i − 3z</span></span> = <span class="frac"><span>−5/3</span><span>z − i/3</span></span>　→　在 z = i/3 的留數是 <b>−5/3</b></p>
+    </div>
+    <p class="lead">高階極點和本性奇點有其他公式，今天先不談。</p>
+  </div>
+</section>
+
+<!-- ========== 10 ========== -->
+<section class="slide" id="s10" data-wiki="concepts/residue-theorem.md" data-checks="V06" data-defines="" data-uses="留數定理 留數">
+  <div class="inner">
+    <div class="kicker">例題</div>
+    <h2>算算看：<span class="m">∮<sub>|z|=2</sub> <span class="frac"><span>5z − 2</span><span>z(z − 1)</span></span> dz</span></h2>
+    <ol class="steps">
+      <li><b>找奇點</b>：分母是 0 的地方 → z = 0 和 z = 1</li>
+      <li><b>哪些在裡面？</b>半徑 2 的圓把兩個都圍住了</li>
+      <li><b>算留數（蓋住法）</b>
+        <br>z = 0：蓋住 z，剩 <span class="frac"><span>5z − 2</span><span>z − 1</span></span> → <span class="frac"><span>−2</span><span>−1</span></span> = <b>2</b>
+        <br>z = 1：蓋住 (z − 1)，剩 <span class="frac"><span>5z − 2</span><span>z</span></span> → <span class="frac"><span>3</span><span>1</span></span> = <b>3</b></li>
+      <li><b>留數定理</b>：2πi × (2 + 3) = <span class="hl" style="font-size:1.2em">10πi</span></li>
+    </ol>
+    <p class="lead">完全不用參數化、不用真的積分。🐾</p>
+  </div>
+</section>
+
+<!-- ========== 11 ========== -->
+<section class="slide" id="s11" data-wiki="concepts/real-integrals.md" data-checks="V12" data-defines="" data-uses="留數定理 極點">
+  <div class="inner cols">
+    <div>
+      <div class="kicker">回到開頭</div>
+      <h2>用留數算 ∫ dx/(1 + x²)</h2>
+      <ol class="steps">
+        <li>把 x 換成 z：f(z) = 1/(z² + 1)</li>
+        <li>實數線 [−R, R] 加上上半圓，湊成封閉曲線</li>
+        <li>裡面只有極點 i，蓋住法：Res = <span class="frac"><span>1</span><span>2i</span></span></li>
+        <li>留數定理：2πi · <span class="frac"><span>1</span><span>2i</span></span> = <span class="hl">π</span></li>
+        <li>半圓那段：函數約 1/R²、弧長約 R，乘起來約 1/R → 0</li>
+      </ol>
+      <div class="box ok"><p><strong>結果</strong>∫<sub>−∞</sub><sup>∞</sup> dx/(1 + x²) = π，和 arctan 算的一樣！</p></div>
+    </div>
+    <figure>
+      <svg viewBox="0 0 320 240" role="img" aria-label="實軸加上半圓的封閉曲線，圍住 i 但不圍住 −i">
+        <line x1="10" y1="170" x2="310" y2="170" stroke="currentColor" stroke-opacity=".3"/>
+        <line x1="160" y1="10" x2="160" y2="235" stroke="currentColor" stroke-opacity=".3"/>
+        <path d="M40,170 L280,170 A120,120 0 0 0 40,170 Z" fill="#d2602a" fill-opacity=".1" stroke="#d2602a" stroke-width="3.5"/>
+        <circle cx="160" cy="120" r="7" fill="#2f8a55"/><text x="172" y="116" font-size="16">i</text>
+        <circle cx="160" cy="220" r="7" fill="none" stroke="#b3401f" stroke-width="3"/><text x="172" y="226" font-size="15">−i（外面）</text>
+        <text x="26" y="192" font-size="14">−R</text><text x="272" y="192" font-size="14">R</text>
+      </svg>
+      <div class="fig-caption">R → ∞ 時，半圓的貢獻消失</div>
+    </figure>
+  </div>
+</section>
+
+<!-- ========== 12 ========== -->
+<section class="slide" id="s12" data-wiki="concepts/common-mistakes.md concepts/residue-theorem.md" data-checks="V22" data-defines="" data-uses="留數 留數定理 極點">
+  <div class="inner">
+    <div class="kicker">總結</div>
+    <h2>三句話記住留數定理</h2>
+    <ol class="steps">
+      <li>繞一圈積分，只有 1/(z − z₀) 那一項會留下來 → 它的係數叫<b>留數</b></li>
+      <li>封閉曲線積分 = 2πi × <b>裡面</b>的留數總和</li>
+      <li>簡單極點用<b>蓋住法</b>算留數</li>
+    </ol>
+    <div class="box warn"><p><strong>⚠️ 常見錯誤</strong>① 把曲線<b>外面</b>的極點也算進去　② 順時針忘了加負號　③ 曲線剛好經過極點時，定理不能用</p></div>
+    <details class="box idea"><summary><b>🧠 自我檢測</b>：把第 10 頁的圓縮小成 |z| = 1/2，答案變成多少？（點我看答案）</summary>
+      <p>只剩 z = 0 在裡面，留數 2 → 2πi × 2 = <b>4πi</b></p></details>
+  </div>
+</section>
+
+<nav class="nav" aria-label="投影片導覽"></nav>
+
+<script>
+// 每頁左下角自動標出「這頁取自 Wiki 哪一頁」，右下角標頁碼
+const WIKI_BASE = "https://github.com/zyiqi17/residue-llm-wiki/blob/main/wiki/";   // 改 repo 名稱時只改這一行
+const slides = [...document.querySelectorAll(".slide")];
+const nav = document.querySelector(".nav");
+slides.forEach((s, i) => {
+  const links = s.dataset.wiki.split(" ").map(p =>
+    `<a href="${WIKI_BASE}${p}" target="_blank" rel="noopener">${p.replace("concepts/", "")}</a>`).join("、");
+  const checks = s.dataset.checks ? ` · 驗算 ${s.dataset.checks}` : "";
+  s.insertAdjacentHTML("beforeend",
+    `<div class="src">📚 Wiki：${links}${checks}</div>
+     <div class="pageno">${i + 1} / ${slides.length}</div>`);
+  nav.insertAdjacentHTML("beforeend", `<a href="#${s.id}" aria-label="第 ${i + 1} 頁"></a>`);
+});
+const dots = [...nav.children];
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) dots.forEach((d, i) => d.classList.toggle("on", slides[i] === e.target));
+}), { threshold: 0.6 });
+slides.forEach(s => io.observe(s));
+
+// 鍵盤翻頁
+document.addEventListener("keydown", e => {
+  if (e.target.closest("summary")) return;
+  const cur = slides.findIndex(s => Math.abs(s.getBoundingClientRect().top) < innerHeight / 2);
+  let next = null;
+  if (["ArrowDown", "PageDown", " ", "ArrowRight"].includes(e.key)) next = Math.min(cur + 1, slides.length - 1);
+  if (["ArrowUp", "PageUp", "ArrowLeft"].includes(e.key)) next = Math.max(cur - 1, 0);
+  if (next !== null) { e.preventDefault(); slides[next].scrollIntoView({ behavior: "smooth" }); }
+});
+</script>
+</body>
+</html>
